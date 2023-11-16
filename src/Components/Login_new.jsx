@@ -34,18 +34,22 @@ const Login = () => {
                 setError('');
                 setSuccess(true);
 
+                navigate('/createPost');
+
                 // Check the role and navigate accordingly
-                switch (userRole) {  // Change this line to use userRole
-                    case 'admin':
-                        navigate('/getAll');
-                        break;
-                    case 'user':
-                        navigate('/createPost');
-                        break;
-                    default:
-                        console.error('Unknown role');
-                        setError('Invalid role');
-                }
+                // switch (userRole) {  // Change this line to use userRole
+                //     case 'admin':
+                //         navigate('/getAll');
+                //         // navigate('/createPost');
+                //         break;
+                //     case 'user':
+                //         navigate('/createPost');
+                //         // navigate('/createPost');
+                //         break;
+                //     default:
+                //         console.error('Unknown role');
+                //         setError('Invalid role');
+                // }
             });
         } catch (err) {
             console.error('Login failed', err.response.data);

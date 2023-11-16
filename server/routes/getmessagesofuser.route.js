@@ -9,6 +9,8 @@ router.get('/', authenticate, async (req, res) => {
         const user = req.user; // This comes from the authenticate middleware
         const message = await Message.find({ userId: user._id }); // Assuming the Message schema has a userId field that links to the user's ID
 
+        console.log(message)
+
         if (message.length === 0) {
             return res.status(404).json({
                 status: 'Failed',
