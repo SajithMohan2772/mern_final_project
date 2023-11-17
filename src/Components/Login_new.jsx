@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
@@ -9,7 +9,7 @@ const Login = () => {
         password: ''
     });
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);  // New state to track successful login
+    const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -18,39 +18,31 @@ const Login = () => {
             ...formData,
             [name]: value
         });
-        setError('');  // Reset error on change
+        setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/login', formData).then(res => {
-                localStorage.setItem('jwtToken', res.data.token);
+            const res = await axios.post('http://localhost:5000/login', formData);
+            localStorage.setItem('jwtToken', res.data.token);
 
-                const decodedToken = jwtDecode(res.data.token);  // Decode the token
-                const userRole = decodedToken.role;  // Extract the role
+            const decodedToken = jwtDecode(res.data.token);
+            const userRole = decodedToken.role;
+            setError('');
+            setSuccess(true);
 
-                console.log('Login successful');
-                setError('');
-                setSuccess(true);
-
-                navigate('/createPost');
-
-                // Check the role and navigate accordingly
-                // switch (userRole) {  // Change this line to use userRole
-                //     case 'admin':
-                //         navigate('/getAll');
-                //         // navigate('/createPost');
-                //         break;
-                //     case 'user':
-                //         navigate('/createPost');
-                //         // navigate('/createPost');
-                //         break;
-                //     default:
-                //         console.error('Unknown role');
-                //         setError('Invalid role');
-                // }
-            });
+            switch (userRole) {
+                case 'admin':
+                    navigate('/dashboard'); // Navigate to admin dashboard
+                    break;
+                case 'user':
+                    navigate('/dashboard'); // Navigate to user dashboard
+                    break;
+                default:
+                    console.error('Unknown role');
+                    setError('Invalid role');
+            }
         } catch (err) {
             console.error('Login failed', err.response.data);
             setError(err.response.data.message);
@@ -59,22 +51,43 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Email:
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} required />
-                </label><br />
-                <label>
-                    Password:
-                    <input type="password" name="password" value={formData.password} onChange={handleChange} required />
-                </label><br />
-                <button type="submit">Login</button>
-            </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>Login successful!</p>}  {/* Display success message */}
-        </div>
+        <>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                <div className="container">
+                    <NavLink className="navbar-brand" to="/">Home</NavLink>
+                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <div className="collapse navbar-collapse" id="navbarNav">
+                        <ul className="navbar-nav ms-auto">
+                            <li className="nav-item">
+                                <NavLink className="nav-link" to="/about">About</NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink className="nav-link" to="/register">Register</NavLink>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div className="container mt-5">
+                <h2>Login</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">Email:</label>
+                        <input type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChange} required />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="password" className="form-label">Password:</label>
+                        <input type="password" className="form-control" id="password" name="password" value={formData.password} onChange={handleChange} required />
+                    </div>
+                    <button type="submit" className="btn btn-primary">Login</button>
+                </form>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {success && <p style={{ color: 'green' }}>Login successful!</p>}
+            </div>
+        </>
     );
 };
 

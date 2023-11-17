@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const connectDB = require('./Database/connect');
 
+const locationRoutes = require('./routes/locationRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
+// const adminRoutes = require('./routes/adminRoutes');
+
 const postMessageRoute = require('./routes/postmessage.route');
 const getMessageRoute = require('./routes/getmessage.route');
 const updateMessageRoute = require('./routes/updatemessage.route');
@@ -24,6 +28,9 @@ app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+app.use('/locations', locationRoutes);
+app.use('/appointments', appointmentRoutes);
+// app.use('/admins', adminRoutes);
 
 app.use('/post-message',postMessageRoute);
 app.use('/get-message',getMessageRoute);
